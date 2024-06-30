@@ -17,19 +17,16 @@ export const Authenticated = () => {
   const { address, chainId } = useWeb3ModalAccount()
 
   const textAreaRef = useRef<HTMLElement>(null)
-  //const [message, setMessage] = useState<string>("")
-  //const [metaphor, setMetaphor] = useState<string>("")
 
   const [day, setDay] = useState<string>("today")
   const [date, setDate] = useState<Date>(new Date())
+  const dateRef = useRef<Date>()
+  const agentResponseRef = useRef<AgentResponse>()
 
   const [dateFormatted, setDateFormatted] = useState<string>("")
   const [agentResponse, setAgentResponse] = useState<AgentResponse>()
-  /*const [agentResponse, setAgentResponse] = useState<AgentResponse>({
-    explanation: { text: "Imagine the stock market as a vast ocean where different currents represent various sectors and economic indicators. On June 28, 2024, the ocean experienced contrasting currents - inflation data and political debates acted like varying winds influencing these waters. While some parts of the ocean (represented by the Nasdaq) found a favorable current, guiding them slightly upward due to prevailing optimism in sectors like AI, other areas (like the S&P 500) faced headwinds from these external factors, causing them to drift lower. The entire ocean remained in motion, influenced by the global winds of political events and economic data, showcasing the dynamic and interconnected nature of the stock market's ecosystem.", links: [] },
-    metaphor: { text: "prompt Imagine the stock market as a vast ocean where different currents represent various sectors and economic indicators. On June 28, 2024, the ocean experienced contrasting currents - inflation data and political debates acted like varying winds influencing these waters. While some parts of the ocean (represented by the Nasdaq) found a favorable current, guiding them slightly upward due to prevailing optimism in sectors like AI, other areas (like the S&P 500) faced headwinds from these external factors, causing them to drift lower. The entire ocean remained in motion, influenced by the global winds of political events and economic data, showcasing the dynamic and interconnected nature of the stock market's ecosystem." },
-  })*/
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoadingExplain, setIsLoadingExplain] = useState<boolean>(false)
+  const [isLoadingMint, setIsLoadingMint] = useState<boolean>(false)
 
   const [isMintingLoading, setIsMintingLoading] = useState(false)
 
@@ -52,17 +49,11 @@ export const Authenticated = () => {
     metaphor: { text: string },
   }
 
-  /*const [state, setState] = useState({
-    day: "today",
-    date: new Date(),
-  });*/
-
   const handleDayChange = ({
     target: { name, value },
   }: React.ChangeEvent<HTMLSelectElement>) => {
 
     let dateSelected = new Date()
-    //console.log(`onDayChange date1: ${date}`)
     if (value == "yesterday") {
       const day = dateSelected.getDate() - 1
       dateSelected.setDate(day)
@@ -70,30 +61,11 @@ export const Authenticated = () => {
       const day = dateSelected.getDate() - 2
       dateSelected.setDate(day)
     }
+
+    dateRef.current = dateSelected
     setDay(value)
     setDate(dateSelected)
   }
-
-  /*const onDayChange = (event: { target: { value: any; }; }) => {
-    const value = event.target.value
-    const dateSelected = new Date()
-    console.log(`onDayChange date1: ${date}`)
-
-    if (value == "yesterday") {
-      const day = dateSelected.getDate() - 1
-      dateSelected.setDate(day)
-    } else if (value == "twodays") {
-      const day = dateSelected.getDate() - 2
-      dateSelected.setDate(day)
-    }
-
-    //setDay({...day,value})
-    setState({
-      ...state,
-      date: dateSelected
-    })
-    console.log(`onDayChange date2: ${date}`)
-  }*/
 
   const days = [
     { value: 'today', label: 'Today' },
@@ -174,14 +146,18 @@ export const Authenticated = () => {
 
   const onExplain = useCallback(
     async (e: any) => {
-      setIsLoading(true)
+      setIsLoadingExplain(true)
 
-      let dateSelected = date!.toLocaleDateString("en-US", {
+      let latestDate = dateRef.current;
+
+      if(!latestDate) latestDate = new Date()
+
+      let dateSelected = latestDate.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric"
       })
-      console.log(`onExplain dateSelected: ${dateSelected}`)
+      //console.log(`onExplain dateSelected: ${dateSelected}`)
       const input = `Stocks markets news for ${dateSelected}`
       if (!walletProvider) return
 
@@ -212,6 +188,7 @@ export const Authenticated = () => {
         while (true) {
           const newMessages: Message[] = await getNewMessages(agentContract, agentRunID, messages.length);
           setMessages(newMessages)
+
           /*if (newMessages) {
             for (let message of newMessages) {
               let roleDisplay = message.role === 'assistant' ? 'THOUGHT' : 'STEP';
@@ -234,10 +211,9 @@ export const Authenticated = () => {
       } catch (error: any) {
         console.log("onExplain error:", error)
       }
-      setIsLoading(false)
-      setIsMintingLoading(false)
+      setIsLoadingExplain(false)
     },
-    [walletProvider, isLoading]
+    [walletProvider, isLoadingExplain]
   )
 
   const getAgentRunId = (receipt: TransactionReceipt, contract: Contract): number | undefined => {
@@ -272,6 +248,7 @@ export const Authenticated = () => {
             metaphor: { text: responseJson.metaphor.text },
           }
           setAgentResponse(responseObject)
+          agentResponseRef.current = responseObject
         }
         console.log(`${roles[i]}:${messages[i]}`);
         newMessages.push({
@@ -285,30 +262,22 @@ export const Authenticated = () => {
 
   const onMint = useCallback(
     async (e: any) => {
-      //const input = (textAreaRef.current?.innerHTML?.replace(HTML_REGULAR, '') || '').replace(/(<br\s*\/?>\s*)+$/, '')
-      const input = agentResponse?.metaphor.text
+      let input = agentResponseRef.current;
+      //console.log(`onMint input:${input}`);
       if (!walletProvider || !input) return
 
-      setIsLoading(true)
+      setIsLoadingMint(true)
       try {
         const ethersProvider = new BrowserProvider(walletProvider)
         const signer = await ethersProvider.getSigner()
         const contract = new Contract(process.env.NEXT_PUBLIC_DALLE_CONTRACT_ADDRESS || "", dalleABI, signer)
-        const tx = await contract.initializeMint(input)
+        const tx = await contract.initializeMint(input.metaphor.text)
         const receipt = await tx.wait()
         const tokenId = getNftId(receipt, contract)
         if (tokenId !== undefined) {
           setIsMintingLoading(true)
           const tokenUri = await pollTokenUri(contract, tokenId)
           if (tokenUri) {
-            /*userNfts.current = [
-              {
-                tokenUri, txHash: receipt.hash,
-                prompt: input
-              },
-              ...userNfts.current,
-            ]
-            setUserNftsCount(userNfts.current.length)*/
             getUserNfts()
 
           }
@@ -317,10 +286,10 @@ export const Authenticated = () => {
       } catch (error: any) {
         console.log("onMint error:", error);
       }
-      setIsLoading(false)
+      setIsLoadingMint(false)
       setIsMintingLoading(false)
     },
-    [walletProvider, isLoading]
+    [walletProvider, isLoadingMint]
   )
 
   const getNftId = (receipt: TransactionReceipt, contract: Contract): number | undefined => {
@@ -385,17 +354,12 @@ export const Authenticated = () => {
     </div>
     <button
       onClick={onExplain}
+      disabled={isLoadingExplain || isLoadingMint}
       className={"flex flex-row items-center gap-2 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] bg-[#628EE4] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-xl  duration-200 " + FONT_BOLD.className}
     >
-      {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+      {isLoadingExplain && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
       Get A Clarity Moment
     </button>
-
-    {date!.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    })}
 
     {agentResponse && (
       <div>
@@ -411,9 +375,10 @@ export const Authenticated = () => {
               {agentResponse.metaphor.text}
               <button
                 onClick={onMint}
+                disabled={isLoadingExplain || isLoadingMint}
                 className={"flex flex-row items-center gap-2 mt-4 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-base  duration-200 " + FONT_BOLD.className}
               >
-                {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+                {isLoadingMint && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
                 Mint Your Clarity Moment
               </button>
             </DisclosurePanel>
@@ -449,18 +414,6 @@ export const Authenticated = () => {
         nfts={otherNfts}
         type={"other"}
       />
-    </div>
-
-    <div>
-      <div className="text-xl font-bold">Logs</div>
-      {messages.map((msg, index) => (
-        <div key={index} className="flex flex-col items-center m-2">
-          <div
-            className="w-full bg-white p-3 rounded border text-black"
-          >{msg.role === 'assistant' ? 'THOUGHT' : 'STEP'}:{msg.content}
-          </div>
-        </div>
-      ))}
     </div>
 
   </div>
