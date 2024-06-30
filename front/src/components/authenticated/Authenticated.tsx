@@ -17,10 +17,13 @@ export const Authenticated = () => {
   const { address, chainId } = useWeb3ModalAccount()
 
   const textAreaRef = useRef<HTMLElement>(null)
-  const [message, setMessage] = useState<string>("")
-  const [metaphor, setMetaphor] = useState<string>("")
+  //const [message, setMessage] = useState<string>("")
+  //const [metaphor, setMetaphor] = useState<string>("")
+
   const [day, setDay] = useState<string>("today")
-  const [date, setDate] = useState<string>("")
+  const [date, setDate] = useState<Date>(new Date())
+
+  const [dateFormatted, setDateFormatted] = useState<string>("")
   const [agentResponse, setAgentResponse] = useState<AgentResponse>()
   /*const [agentResponse, setAgentResponse] = useState<AgentResponse>({
     explanation: { text: "Imagine the stock market as a vast ocean where different currents represent various sectors and economic indicators. On June 28, 2024, the ocean experienced contrasting currents - inflation data and political debates acted like varying winds influencing these waters. While some parts of the ocean (represented by the Nasdaq) found a favorable current, guiding them slightly upward due to prevailing optimism in sectors like AI, other areas (like the S&P 500) faced headwinds from these external factors, causing them to drift lower. The entire ocean remained in motion, influenced by the global winds of political events and economic data, showcasing the dynamic and interconnected nature of the stock market's ecosystem.", links: [] },
@@ -31,9 +34,7 @@ export const Authenticated = () => {
   const [isMintingLoading, setIsMintingLoading] = useState(false)
 
   const [_, setUserNftsCount] = useState<number>(0)
-  const userNfts = useRef<Nft[]>([])
-  const userMoments = useRef<ClarityMoment[]>([])
-
+  const [userNfts, setUserNfts] = useState<Nft[]>([])
   const [otherNfts, setOtherNfts] = useState<Nft[]>([])
 
   const [isUserNftsLoading, setIsUserNftsLoading] = useState<boolean>(false)
@@ -51,42 +52,54 @@ export const Authenticated = () => {
     metaphor: { text: string },
   }
 
-  const onDayChange = (event: { target: { value: any; }; }) => {
-    const value = event.target.value
-    const dateSelected = new Date()
+  /*const [state, setState] = useState({
+    day: "today",
+    date: new Date(),
+  });*/
 
+  const handleDayChange = ({
+    target: { name, value },
+  }: React.ChangeEvent<HTMLSelectElement>) => {
+
+    let dateSelected = new Date()
+    //console.log(`onDayChange date1: ${date}`)
     if (value == "yesterday") {
-      const day = dateSelected.getDate() - 1;
-      dateSelected.setDate(day);
-      setDate(dateSelected.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      }))
+      const day = dateSelected.getDate() - 1
+      dateSelected.setDate(day)
     } else if (value == "twodays") {
-      const day = dateSelected.getDate() - 2;
-      dateSelected.setDate(day);
-      setDate(dateSelected.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      }))
-    } else {
-      setDate(dateSelected.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      }))
+      const day = dateSelected.getDate() - 2
+      dateSelected.setDate(day)
     }
     setDay(value)
-  };
+    setDate(dateSelected)
+  }
+
+  /*const onDayChange = (event: { target: { value: any; }; }) => {
+    const value = event.target.value
+    const dateSelected = new Date()
+    console.log(`onDayChange date1: ${date}`)
+
+    if (value == "yesterday") {
+      const day = dateSelected.getDate() - 1
+      dateSelected.setDate(day)
+    } else if (value == "twodays") {
+      const day = dateSelected.getDate() - 2
+      dateSelected.setDate(day)
+    }
+
+    //setDay({...day,value})
+    setState({
+      ...state,
+      date: dateSelected
+    })
+    console.log(`onDayChange date2: ${date}`)
+  }*/
 
   const days = [
     { value: 'today', label: 'Today' },
     { value: 'yesterday', label: 'Yesterday' },
     { value: 'twodays', label: 'Two days ago' },
   ]
-
 
   useEffect(() => {
     getUserNfts()
@@ -98,35 +111,33 @@ export const Authenticated = () => {
     setIsUserNftsLoading(true)
     const ethersProvider = new BrowserProvider(walletProvider)
     const signer = await ethersProvider.getSigner()
-    const dalleContract = new Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "", dalleABI, signer)
+    const dalleContract = new Contract(process.env.NEXT_PUBLIC_DALLE_CONTRACT_ADDRESS || "", dalleABI, signer)
     let indexedUserNfts: Nft[] = []
 
     const ownerBalance = await dalleContract.balanceOf(address)
-    console.log(`ownerBalance: ${ownerBalance}`);
-
     for (let i = Number(ownerBalance) - 1; i >= 0; i--) {
-    //for (let i = 0; i < 5; i++) {
-      if ((userNfts.current || []).length > 5) break
-      if (indexedUserNfts.length > 5) break
+      //for (let i = 0; i < 5; i++) {
+      // if ((userNfts.current || []).length > 5) break
+      if (userNfts.length > 5 || indexedUserNfts.length > 5) break
       try {
         const token = await dalleContract.tokenOfOwnerByIndex(address, i)
-        
+
         if (token !== undefined) {
           const tokenUri = await dalleContract.tokenURI(token)
           const moment: ClarityMoment = await dalleContract.mintInputs(token)
           const prompt = moment.prompt
-          if (tokenUri) indexedUserNfts = [  ...indexedUserNfts, {
+          if (tokenUri) indexedUserNfts = [...indexedUserNfts, {
             tokenUri,
             prompt
           }]
         }
-      } catch (e) {
-        console.log(`error: ${e}`);
-        break
+      } catch (error) {
+        console.log(`error: ${error}`)
       }
     }
-    userNfts.current = [...userNfts.current, ...indexedUserNfts]
-    setUserNftsCount(userNfts.current.length)
+    setUserNfts(indexedUserNfts)
+    //userNfts.current = [...userNfts.current, ...indexedUserNfts]
+    setUserNftsCount(userNfts.length)
     setIsUserNftsLoading(false)
   }
 
@@ -135,7 +146,7 @@ export const Authenticated = () => {
     setIsOtherNftsLoading(true)
     const ethersProvider = new BrowserProvider(walletProvider)
     const signer = await ethersProvider.getSigner()
-    const dalleContract = new Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "", dalleABI, signer)
+    const dalleContract = new Contract(process.env.NEXT_PUBLIC_DALLE_CONTRACT_ADDRESS || "", dalleABI, signer)
     let indexedNfts: Nft[] = []
     try {
       const totalSupply = await dalleContract.totalSupply()
@@ -143,7 +154,7 @@ export const Authenticated = () => {
       for (let i = Number(totalSupply) - 1; i >= 0; i--) {
         if (indexedNfts.length > 5 || otherNfts.length > 5) break
         try {
-          const tokenUri = await dalleContract.tokenURI(i)
+          const tokenUri = await dalleContract.tokenURI(i + 1)
           const moment: ClarityMoment = await dalleContract.mintInputs(i)
           const prompt = moment.prompt
           if (tokenUri) indexedNfts = [...indexedNfts, {
@@ -151,32 +162,29 @@ export const Authenticated = () => {
             prompt
           }]
         } catch (e) {
-          break
+          console.log(`error: ${e}`);
         }
       }
       setOtherNfts(indexedNfts)
-    } catch (e) {
-
+    } catch (error) {
+      console.log(`error: ${error}`)
     }
-
     setIsOtherNftsLoading(false)
   }
 
   const onExplain = useCallback(
     async (e: any) => {
-      let dateSelected = date
-      if(!dateSelected) {
-        dateSelected = new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric"
-        })
-        setDate(dateSelected)
-      }
+      setIsLoading(true)
+
+      let dateSelected = date!.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      })
+      console.log(`onExplain dateSelected: ${dateSelected}`)
       const input = `Stocks markets news for ${dateSelected}`
       if (!walletProvider) return
 
-      setIsLoading(true)
       try {
         // The query you want to start the agent with
         const query = input
@@ -185,11 +193,10 @@ export const Authenticated = () => {
         const signer = await ethersProvider.getSigner()
         const agentContract = new Contract(process.env.NEXT_PUBLIC_AGENT_CONTRACT_ADDRESS || "", agentABI, signer)
 
+        setAgentResponse(undefined)
         // Call the startChat function
         const transactionResponse = await agentContract.runAgent(query, maxIterations);
         const receipt = await transactionResponse.wait()
-        setMessage("")
-        setAgentResponse(undefined)
         console.log(`Task sent, tx hash: ${receipt.hash}`)
         console.log(`Agent started with task: "${query}"`)
 
@@ -209,14 +216,14 @@ export const Authenticated = () => {
             for (let message of newMessages) {
               let roleDisplay = message.role === 'assistant' ? 'THOUGHT' : 'STEP';
               let color = message.role === 'assistant' ? '\x1b[36m' : '\x1b[33m'; // Cyan for thought, yellow for step
-              console.log(`${color}${roleDisplay}\x1b[0m: ${message.content}`);
+              console.log(`${color}${roleDisplay}\x1b[0m: ${message.content}`)
               messages.push(message)
             }
           }*/
 
           await new Promise(resolve => setTimeout(resolve, 2000))
           if (exitNextLoop) {
-            console.log(`agent run ID ${agentRunID} finished!`);
+            console.log(`agent run ID ${agentRunID} finished!`)
             break;
           }
           if (await agentContract.isRunFinished(agentRunID)) {
@@ -225,7 +232,7 @@ export const Authenticated = () => {
         }
         console.log("onExplain messages:", messages)
       } catch (error: any) {
-        console.log("onExplain error:", error);
+        console.log("onExplain error:", error)
       }
       setIsLoading(false)
       setIsMintingLoading(false)
@@ -244,7 +251,7 @@ export const Authenticated = () => {
         }
       } catch (error) {
         // This log might not have been from your contract, or it might be an anonymous log
-        console.log("Could not parse log:", log)
+        console.log("error:", error)
       }
     }
     return agentRunID;
@@ -286,28 +293,29 @@ export const Authenticated = () => {
       try {
         const ethersProvider = new BrowserProvider(walletProvider)
         const signer = await ethersProvider.getSigner()
-        const contract = new Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "", dalleABI, signer)
+        const contract = new Contract(process.env.NEXT_PUBLIC_DALLE_CONTRACT_ADDRESS || "", dalleABI, signer)
         const tx = await contract.initializeMint(input)
         const receipt = await tx.wait()
-        setMessage("")
         const tokenId = getNftId(receipt, contract)
         if (tokenId !== undefined) {
           setIsMintingLoading(true)
           const tokenUri = await pollTokenUri(contract, tokenId)
           if (tokenUri) {
-            userNfts.current = [
+            /*userNfts.current = [
               {
                 tokenUri, txHash: receipt.hash,
                 prompt: input
               },
               ...userNfts.current,
             ]
-            setUserNftsCount(userNfts.current.length)
+            setUserNftsCount(userNfts.current.length)*/
+            getUserNfts()
 
           }
         }
 
-      } catch {
+      } catch (error: any) {
+        console.log("onMint error:", error);
       }
       setIsLoading(false)
       setIsMintingLoading(false)
@@ -361,10 +369,10 @@ export const Authenticated = () => {
 
       <Field>
         <div className="relative">
-          <Select onChange={onDayChange}
+          <Select name="date" onChange={handleDayChange}
             className="block w-60 appearance-none rounded-lg border-none bg-white py-1.5 px-3 text-2xl text-black focus:outline-none  *:text-black">
             {days.map((day) => (
-              <option value={day.value} >
+              <option key={day.value} value={day.value}>
                 {day.label}
               </option>
             ))}
@@ -382,6 +390,12 @@ export const Authenticated = () => {
       {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
       Get A Clarity Moment
     </button>
+
+    {date!.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    })}
 
     {agentResponse && (
       <div>
@@ -422,7 +436,7 @@ export const Authenticated = () => {
       <Gallery
         isMintingLoading={isMintingLoading}
         isLoading={isUserNftsLoading}
-        nfts={userNfts.current}
+        nfts={userNfts}
         type={"user"}
       />
     </div>
