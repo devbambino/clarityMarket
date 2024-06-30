@@ -20,8 +20,8 @@ const config: Config = {
       black: "#000",
       white: "#fff",
       brand: {
-        blue: "#628EE4",
-        bluedark: "#374F81",
+        blue: "#0657e0",
+        bluedark: "#002360",
         neongreen: "#00ff66"
       }
     }

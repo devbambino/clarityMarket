@@ -6,14 +6,6 @@ To see the contracts this app uses check this repo: [Contracts](https://github.c
 
 ## Development
 
-**Install dependencies**
-
-```
-cd front
-cp .env.example .env
-npm install
-```
-
 ### Running Locally
 
 1. Install NodeJS >=18.
