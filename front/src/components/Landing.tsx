@@ -1,72 +1,44 @@
 "use client"
 
-import {FONT} from "@/fonts/fonts";
-import {useWeb3Modal, useWeb3ModalAccount} from '@web3modal/ethers/react'
-import {Authenticated} from "@/components/authenticated/Authenticated";
+import { FONT_BOLD, FONT } from "@/fonts/fonts";
+import { useWeb3Modal, useWeb3ModalAccount } from '@web3modal/ethers/react'
+import { Authenticated } from "@/components/authenticated/Authenticated";
 import Navbar from "@/components/navbar";
-import {BuildWithGaladriel} from "@/components/buildwithgaladriel";
+import { BuildWithGaladriel } from "@/components/buildwithgaladriel";
 import Addresses from "@/components/Addresses";
 
 
 export function Landing() {
-  const {open} = useWeb3Modal()
+  const { open } = useWeb3Modal()
 
-  const {address} = useWeb3ModalAccount()
+  const { address } = useWeb3ModalAccount()
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-20 p-2 lg:p-12 justify-between z-2 relative">
-      <Navbar/>
-
+    <main className={"h-screen flex flex-col " + FONT.className}>
       {!address ?
-        <div
-          className={"flex flex-col gap-6 text-center text-xl pb-40 " + FONT.className}
-        >
-          <div className="text-2xl lg:text-8xl">
-            Text-to-image brought on chain
-          </div>
-          <div
-            className="text-4xl pt-10"
+        <div className="h-screen flex flex-col gap-8 justify-center ">
+          <img
+            className="h-auto w-full md:w-1/2 mx-auto"
+            src="/logoHor.png"
+            alt="ClarityMarket, invest with confidence, learn with clarity"
+          />
+          <p className="text-center text-lg lg:text-xl">
+            Your guide to seeing through the noise of the market.
+          </p>
+          <button
+            onClick={() => open()}
+            className={"flex flex-row items-center gap-2 px-5 py-2 rounded-lg bg-[#F0D061] mx-auto text-xl text-black hover:text-white hover:bg-[#374F81] duration-200 " + FONT_BOLD.className}
           >
-            Use generative AI to create dynamic, on-chain NFTs
-          </div>
-          <div className="pt-[100px]">
-            <button
-              onClick={() => open()}
-              className={"p-4 bg-[#00FF66] text-3xl text-black hover:bg-[#00b548] duration-200 " + FONT.className}
-            >
-              Connect wallet to Mint
-            </button>
-          </div>
-          <div className="text-4xl pt-32">
-            Connect to
-            <a
-              href="https://docs.galadriel.com/setting-up-a-wallet"
-              target="_blank"
-              className="px-2 underline"
-            >
-              Galadriel devnet
-            </a>
-            and to mint, get tokens from
-            <a
-              href="https://discord.gg/4UuffUbkjb"
-              target="_blank"
-              className="px-2 underline"
-            >
-              faucet
-            </a>
-          </div>
+            Connect wallet to Enter
+          </button>
+          <p className="text-center font-bold text-base lg:text-lg">
+            Understanding the stocks markets and making investing decisions have never been easier!
+          </p>
         </div>
         :
-        <Authenticated/>
+        <Authenticated />
       }
-
-
-      <div
-        className={"flex w-full flex-col lg:flex-row lg:justify-between items-end text-xl p-4 lg:p-0"}>
-        <Addresses/>
-        <BuildWithGaladriel/>
-      </div>
     </main>
   )
 }

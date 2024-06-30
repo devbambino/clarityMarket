@@ -1,10 +1,10 @@
 import localFont from "next/font/local";
 
 export const FONT_BOLD = localFont({
-  src: "./PPNeueBit-Bold.otf",
+  src: "./NotoSans-Bold.ttf",
   display: "swap",
 })
 export const FONT = localFont({
-  src: "./PPMondwest-Regular.otf",
+  src: "./NotoSans-Light.ttf",
   display: "swap",
 })

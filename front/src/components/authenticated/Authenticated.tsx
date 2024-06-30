@@ -1,11 +1,13 @@
 import { useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { BrowserProvider, Contract, ethers, TransactionReceipt } from "ethers";
-import ContentEditable from "react-contenteditable";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FONT_BOLD } from "@/fonts/fonts";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { Gallery, Nft } from "@/components/Gallery";
 import { agentABI, dalleABI } from "@/types/network";
+import Navbar from "../navbar";
+import { Field, Label, Select } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 const HTML_REGULAR =
   /<(?!img|table|\/table|thead|\/thead|tbody|\/tbody|tr|\/tr|td|\/td|th|\/th|br|\/br).*?>/gi
@@ -17,6 +19,8 @@ export const Authenticated = () => {
   const textAreaRef = useRef<HTMLElement>(null)
   const [message, setMessage] = useState<string>("")
   const [metaphor, setMetaphor] = useState<string>("")
+  const [day, setDay] = useState<string>("today")
+  const [date, setDate] = useState<string>("")
   const [agentResponse, setAgentResponse] = useState<AgentResponse>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -41,6 +45,42 @@ export const Authenticated = () => {
     explanation: { text: string, links: string[] },
     metaphor: { text: string },
   }
+
+  const onDayChange = (event: { target: { value: any; }; }) => {
+    const value = event.target.value
+    const dateSelected = new Date()
+    
+    if (value == "yesterday") {
+      const day = dateSelected.getDate() - 1;
+      dateSelected.setDate(day);
+      setDate(dateSelected.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }))
+    } else if (value == "twodays") {
+      const day = dateSelected.getDate() - 2;
+      dateSelected.setDate(day);
+      setDate(dateSelected.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }))
+    } else{
+      setDate(dateSelected.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }))
+    }
+    setDay(value)
+  };
+
+  const days = [
+    { value: 'today', label: 'Today' },
+    { value: 'yesterday', label: 'Yesterday' },
+    { value: 'twodays', label: 'Two days ago' },
+  ]
 
 
   useEffect(() => {
@@ -101,8 +141,8 @@ export const Authenticated = () => {
 
   const onExplain = useCallback(
     async (e: any) => {
-      const input = (textAreaRef.current?.innerHTML?.replace(HTML_REGULAR, '') || '')
-        .replace(/(<br\s*\/?>\s*)+$/, '')
+      //const input = (textAreaRef.current?.innerHTML?.replace(HTML_REGULAR, '') || '').replace(/(<br\s*\/?>\s*)+$/, '')
+      const input = `Stocks markets news for ${date}`
       if (!walletProvider || !input) return
 
       setIsLoading(true)
@@ -281,58 +321,46 @@ export const Authenticated = () => {
   )
 
   return <div className="w-full px-2 md:px-20 flex flex-col gap-16">
-    <div>
-      <div className="pb-4">
-        Start with a detailed description
-      </div>
-      <div className="flex flex-row">
-        <div
-          className="rt-TextAreaRoot rt-r-size-1 rt-variant-surface flex-1 chat-textarea bg-[#002360]"
-          style={{ borderBottom: "2px solid white" }}
-        >
-          <ContentEditable
-            innerRef={textAreaRef}
-            style={{
-              minHeight: "50px",
-              maxHeight: "200px",
-              overflowY: "auto",
-              fontSize: "18px",
-              paddingTop: "13px",
-              paddingBottom: "13px",
-            }}
-            className="rt-TextAreaInput text-base focus:outline-none flex px-2"
-            html={message}
-            disabled={isLoading}
-            onChange={(e) => {
-              setMessage(e.target.value.replace(HTML_REGULAR, ''))
-            }}
-            onKeyDown={(e) => {
-              handleKeypress(e)
-            }}
-          />
-          <div className="rt-TextAreaChrome"></div>
+    <Navbar></Navbar>
+    <div className="flex flex-row mx-auto justify-center gap-2">
+      <span className="mt-1 text-2xl"> What {day == "today" ? "is" : "was"} happening with the stocks markets</span>
+
+      <Field>
+        <div className="relative">
+          <Select onChange={onDayChange}
+            className="block w-60 appearance-none rounded-lg border-none bg-white py-1.5 px-3 text-2xl text-black focus:outline-none  *:text-black">
+            {days.map((day) => (
+              <option value={day.value} >
+                {day.label}
+              </option>
+            ))}
+          </Select>
         </div>
-        <button
-          className={"flex flex-row items-center gap-2 px-5 py-2 hover:bg-white hover:text-black duration-150  text-black bg-[#0F6] text-4xl " + FONT_BOLD.className}
-          onClick={onExplain}
-        >
-
-          {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-          Get Explanation
-        </button>
-      </div>
-      <button
-        className={"flex flex-row items-center gap-2 px-5 py-2 hover:bg-white hover:text-black duration-150  text-black bg-[#0F6] text-4xl " + FONT_BOLD.className}
-        onClick={onMint}
-      >
-
-        {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-        Generate NFT
-      </button>
+      </Field>
+      <p className={"text-center text-4xl " + FONT_BOLD.className}>
+        ???
+      </p>
     </div>
+    <button
+      onClick={onExplain}
+      className={"flex flex-row items-center gap-2 px-5 py-2 rounded-lg bg-[#F0D061] mx-auto text-xl text-black hover:text-white hover:bg-[#374F81] duration-200 " + FONT_BOLD.className}
+    >
+      {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+      Get Explanation
+    </button>
+    <button
+      onClick={onMint}
+      className={"flex flex-row items-center gap-2 px-5 py-2 rounded-lg bg-[#F0D061] mx-auto text-xl text-black hover:text-white hover:bg-[#374F81] duration-200 " + FONT_BOLD.className}
+    >
+      {isLoading && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+      Generate NFT
+    </button>
+
+
 
     <div>
       <div className="text-xl">Messages</div>
+      {date}
       {agentResponse && (
         <div className="flex flex-col items-center m-2">
           <div
@@ -348,7 +376,7 @@ export const Authenticated = () => {
     </div>
 
     <div>
-      <div className="text-xl">Messages</div>
+      <div className="text-xl font-bold">Messages</div>
       {messages.map((msg, index) => (
         <div key={index} className="flex flex-col items-center m-2">
           <div
