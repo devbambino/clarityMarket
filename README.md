@@ -46,6 +46,9 @@ We believe in empowering people to take control of their finances, and that ever
 3. **Milestone3**: 
 4. **Milestone4**: 
 
+## Contributors
+- **Fredy D.**: aka [Dev bambino](https://github.com/devbambino), Full Stack Dev.
+
 ## Technology
 
 ### AI + Blockchain with Galadriel
