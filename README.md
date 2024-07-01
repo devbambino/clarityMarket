@@ -20,10 +20,16 @@ The stock market can be a daunting place for new investors, with complex termino
 We aim to address all those challanges with ClarityMarket, a platform that breaks down investment barriers by:
 
 1. **Providing easy-to-understand explanations**: We've avoided jargon and focused on clear, concise and engaging language to make investing accessible for everyone, regardless of their financial literacy. However, we also provide an alternative more technical explanation for helping the users get used to financial technicalites and terms.
+<img src="resources/4explanationsMetaphor.png" width="566" height="300">
+<img src="resources/5explanationsTechnical.png" width="566" height="300">
 
 2. **Simplifying the user interface**: We're designing a clean and intuitive interface that makes it easy to understand how the market is performing and why.
+<img src="resources/1landing.png" width="566" height="300">
+<img src="resources/2dashboard.png" width="566" height="300">
 
-3. **Making financial analysis cool and visual**: We also offer the user the chance to Mint a cool NFT with the explanation the app is giving, so he could keep track of the markets on a cool and visual way.
+3. **Making financial analysis COOL and VISUAL**: We also offer the user the chance to Mint a cool NFT with the explanation the app is giving, so he could keep track of the markets on a cool and visual way.
+<img src="resources/6mintExplanationNft.png" width="566" height="300">
+<img src="resources/7MintedNFTs.png" width="566" height="300">
 
 ## Why we built ClarityMarket?
 
@@ -41,10 +47,10 @@ We believe in empowering people to take control of their finances, and that ever
 
 ## Roadmap
 
-1. **Working prototype**: 
-2. **Milestone2**: 
-3. **Milestone3**: 
-4. **Milestone4**: 
+1. **Working prototype**: In this prototype we decided to just allow the analysis of up to three days of stocks markets information. Additionally, we currently do a basic web search in order to get the most relevant news on a specific date. The image generation was implemented also using a tool from the GenAI agent.
+2. **MVP**: We are planning to add more features in the following months: Adding a larger context with up to 2 weeks of search data, Making more complex web searches through a more elaborated function calling scheme, Adding tokenomics to the app's logic in order to develop a profitable and sustainable business, Adding more capabilities to the NFT feature including social sharing.
+3. **Mainnet**: We would love to be able to take the MVP to Galabriel's mainnet once is available to the public.
+4. **Stock tracking & Investing**: By the end of the year, we will be adding individual stocks tracking and investing capabilities to the app, so investors would be able to put the knowledge they are getting from the app to work and make some money.
 
 ## Contributors
 - **Fredy D.**: aka [Dev bambino](https://github.com/devbambino), Full Stack Dev.
