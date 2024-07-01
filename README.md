@@ -1,5 +1,7 @@
 <img src="resources/logoHor.png" width="100%">
 
+**Demo**: [Click here..](https://clarity-market.vercel.app/)
+
 # ClarityMarket
 We're excited to introduce ClarityMarket: Your guide to seeing through the noise of the market.
 
