@@ -19,9 +19,9 @@ The stock market can be a daunting place for new investors, with complex termino
 
 ## Solution
 
-We aim to address all those challanges with ClarityMarket, a platform that breaks down investment barriers by:
+We aim to address all those challenges with ClarityMarket, a platform that breaks down investment barriers by:
 
-1. **Providing easy-to-understand explanations**: We've avoided jargon and focused on clear, concise and engaging language to make investing accessible for everyone, regardless of their financial literacy. However, we also provide an alternative more technical explanation for helping the users get used to financial technicalites and terms.
+1. **Providing easy-to-understand explanations**: We've avoided jargon and focused on clear, concise and engaging language to make investing accessible for everyone, regardless of their financial literacy. However, we also provide an alternative more technical explanation for helping the users get used to financial technicalities and terms.
 <img src="resources/4explanationsMetaphor.png" width="566" height="300">
 <img src="resources/5explanationsTechnical.png" width="566" height="300">
 
@@ -35,7 +35,7 @@ We aim to address all those challanges with ClarityMarket, a platform that break
 
 ## Why we built ClarityMarket?
 
-We believe in empowering people to take control of their finances, and that everyone should have the opporutnity to grow his/her wealth.
+We believe in empowering people to take control of their finances, and that everyone should have the opportunity to grow his/her wealth.
 
 ## Key Features
 
