@@ -1,7 +1,7 @@
 import {IBM_Plex_Mono} from "next/font/google";
 import "./globals.css";
 import {Web3ModalProvider} from "@/context/Web3Modal";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata = {
   title: {
@@ -30,7 +30,7 @@ export default function RootLayout(
     <div className="h-screen">
       <Web3ModalProvider>
         {children}
-        <SpeedInsights />
+        <Analytics/>
       </Web3ModalProvider>
     </div>
     </body>

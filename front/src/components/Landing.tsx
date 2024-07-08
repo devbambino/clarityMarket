@@ -14,14 +14,18 @@ export function Landing() {
   return (
     <main className={"h-screen flex flex-col " + FONT.className}>
       {!address ?
-        <div className="h-screen flex flex-col gap-8 justify-center ">
+        <div className="h-screen flex flex-col gap-8 justify-center text-center items-center">
           <img
             className="h-auto w-full md:w-1/2 mx-auto"
             src="/logoHor.png"
             alt="ClarityMarket, invest with confidence, learn with clarity"
           />
-          <p className="text-center text-lg lg:text-xl">
-            Your guide to seeing through the noise of the market.
+          <p className="w-full text-center py-2 font-bold text-2xl bg-white text-[#3c4e7d]"> Are you <span className={"uppercase underline px-2 text-4xl text-[#3c4e7d] " + FONT_BOLD.className}>tired</span> of losing money on the stocks markets <span className={"underline px-2 text-4xl text-[#3c4e7d] " + FONT_BOLD.className}> ??? </span></p>
+          <p className="leading-relaxed w-2/3 text-center text-2xl">
+            All you need is <span className={"underline text-4xl text-[#F9EB68] " + FONT_BOLD.className}>Clarity</span>, our AI-powered financial educational platform designed to <span className={"px-2 text-[#3c4e7d] bg-white " + FONT_BOLD.className}>Empower retail investors</span>, like you!!!
+          </p>
+          <p className="text-center text-lg lg:text-2xl">
+            Let <span className={"underline text-4xl text-[#F9EB68] " + FONT_BOLD.className}>Clarity</span> be your guide to seeing through the noise of the market:
           </p>
           <button
             onClick={() => open()}
@@ -30,8 +34,9 @@ export function Landing() {
             Connect wallet to Enter
           </button>
           <p className="text-center font-bold text-base lg:text-lg">
-            Understanding the stocks markets and making investing decisions have never been easier!
+            Making better investing decisions on the stocks market have never been easier!
           </p>
+          
         </div>
         :
         <Authenticated />
