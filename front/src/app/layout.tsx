@@ -1,7 +1,8 @@
-import {IBM_Plex_Mono} from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import {Web3ModalProvider} from "@/context/Web3Modal";
+import { Web3ModalProvider } from "@/context/Web3Modal";
 import { Analytics } from "@vercel/analytics/react"
+import { FONT } from "@/fonts/fonts";
 
 export const metadata = {
   title: {
@@ -16,7 +17,7 @@ export const metadata = {
 }
 
 const plexmono = IBM_Plex_Mono(
-  {weight: "400", subsets: ["latin"]},
+  { weight: "400", subsets: ["latin"] },
 );
 
 
@@ -26,14 +27,15 @@ export default function RootLayout(
   }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en">
-    <body className={plexmono.className}>
-    <div className="h-screen">
-      <Web3ModalProvider>
-        {children}
-        <Analytics/>
-      </Web3ModalProvider>
-    </div>
-    </body>
+      <body className={plexmono.className}>
+
+        <div className={"min-h-screen bg-[#47a1ff] text-white flex flex-col justify-center items-center" + FONT.className}>
+          <Web3ModalProvider>
+            {children}
+            <Analytics />
+          </Web3ModalProvider>
+        </div>
+      </body>
     </html>
   );
 }

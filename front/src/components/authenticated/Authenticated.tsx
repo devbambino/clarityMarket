@@ -150,7 +150,7 @@ export const Authenticated = () => {
 
       let latestDate = dateRef.current;
 
-      if(!latestDate) latestDate = new Date()
+      if (!latestDate) latestDate = new Date()
 
       let dateSelected = latestDate.toLocaleDateString("en-US", {
         year: "numeric",
@@ -331,90 +331,91 @@ export const Authenticated = () => {
     [onMint]
   )
 
-  return <div className="w-full px-2 md:px-20 flex flex-col gap-16">
+  return <>
     <Navbar></Navbar>
-    <div className="flex flex-col md:flex-row mx-auto items-center text-center gap-2">
-      <span className="text-2xl"> Wondering what <span className={"underline text-4xl text-[#F9EB68] " + FONT_BOLD.className}>{day == "today" ? "is" : "was"}</span> happening with the stocks markets</span>
+    <div className="w-full px-2 md:px-20 flex flex-col gap-16 mt-10">
+      <div className="flex flex-col md:flex-row mx-auto items-center text-center gap-2">
+        <span className="text-2xl"> Wondering what <span className={"underline text-4xl text-[#F9EB68] " + FONT_BOLD.className}>{day == "today" ? "is" : "was"}</span> happening with the stocks markets</span>
 
-      <Field>
-        <div className="relative">
-          <Select name="date" onChange={handleDayChange}
-            className="block w-60 appearance-none rounded-lg border-none bg-white py-1.5 px-3 text-2xl text-black focus:outline-none  *:text-black">
-            {days.map((day) => (
-              <option key={day.value} value={day.value}>
-                {day.label}
-              </option>
-            ))}
-          </Select>
-        </div>
-      </Field>
-      <p className={"text-center text-4xl " + FONT_BOLD.className}>
-        ???
-      </p>
-    </div>
-    <button
-      onClick={onExplain}
-      disabled={isLoadingExplain || isLoadingMint}
-      className={"flex flex-row items-center gap-2 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] bg-[#628EE4] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-xl  duration-200 " + FONT_BOLD.className}
-    >
-      {isLoadingExplain && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-      Get A Clarity Moment
-    </button>
-
-    {agentResponse && (
-      <div>
-        <div className="mx-auto w-full max-w-lg divide-y divide-white/5 rounded-xl bg-[#374F81]">
-          <Disclosure as="div" className="p-6" defaultOpen={true}>
-            <DisclosureButton className="group flex w-full items-center justify-between">
-              <span className={"text-lg font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
-                This is what {day == "today" ? "is" : "was"} happening with the stocks markets...
-              </span>
-              <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
-            </DisclosureButton>
-            <DisclosurePanel className="mt-2 text-base text-white">
-              {agentResponse.metaphor.text}
-              <button
-                onClick={onMint}
-                disabled={isLoadingExplain || isLoadingMint}
-                className={"flex flex-row items-center gap-2 mt-4 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-base  duration-200 " + FONT_BOLD.className}
-              >
-                {isLoadingMint && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-                Mint Your Clarity Moment
-              </button>
-            </DisclosurePanel>
-          </Disclosure>
-          <Disclosure as="div" className="p-6">
-            <DisclosureButton className="group flex w-full items-center justify-between">
-              <span className={"text-left text-base font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
-                <b>Fancy a more technical explanation?</b>
-              </span>
-              <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
-            </DisclosureButton>
-            <DisclosurePanel className="mt-2 text-base text-white">{agentResponse.explanation.text}</DisclosurePanel>
-          </Disclosure>
-        </div>
+        <Field>
+          <div className="relative">
+            <Select name="date" onChange={handleDayChange}
+              className="block w-60 appearance-none rounded-lg border-none bg-white py-1.5 px-3 text-2xl text-black focus:outline-none  *:text-black">
+              {days.map((day) => (
+                <option key={day.value} value={day.value}>
+                  {day.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </Field>
+        <p className={"text-center text-4xl " + FONT_BOLD.className}>
+          ???
+        </p>
       </div>
-    )}
+      <button
+        onClick={onExplain}
+        disabled={isLoadingExplain || isLoadingMint}
+        className={"flex flex-row items-center gap-2 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-xl  duration-200 " + FONT_BOLD.className}
+      >
+        {isLoadingExplain && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+        Get A Clarity Moment
+      </button>
 
-    <div>
-      <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}>Your Most Recent Clarity Moments</div>
-      <Gallery
-        isMintingLoading={isMintingLoading}
-        isLoading={isUserNftsLoading}
-        nfts={userNfts}
-        type={"user"}
-      />
+      {agentResponse && (
+        <div>
+          <div className="mx-auto w-full max-w-lg divide-y divide-white/5 rounded-xl bg-[#374F81]">
+            <Disclosure as="div" className="p-6" defaultOpen={true}>
+              <DisclosureButton className="group flex w-full items-center justify-between">
+                <span className={"text-lg font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
+                  This is what {day == "today" ? "is" : "was"} happening with the stocks markets...
+                </span>
+                <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
+              </DisclosureButton>
+              <DisclosurePanel className="mt-2 text-base text-white">
+                {agentResponse.metaphor.text}
+                <button
+                  onClick={onMint}
+                  disabled={isLoadingExplain || isLoadingMint}
+                  className={"flex flex-row items-center gap-2 mt-4 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-base  duration-200 " + FONT_BOLD.className}
+                >
+                  {isLoadingMint && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+                  Mint Your Clarity Moment
+                </button>
+              </DisclosurePanel>
+            </Disclosure>
+            <Disclosure as="div" className="p-6">
+              <DisclosureButton className="group flex w-full items-center justify-between">
+                <span className={"text-left text-base font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
+                  <b>Fancy a more technical explanation?</b>
+                </span>
+                <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
+              </DisclosureButton>
+              <DisclosurePanel className="mt-2 text-base text-white">{agentResponse.explanation.text}</DisclosurePanel>
+            </Disclosure>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}>Your Most Recent Clarity Moments</div>
+        <Gallery
+          isMintingLoading={isMintingLoading}
+          isLoading={isUserNftsLoading}
+          nfts={userNfts}
+          type={"user"}
+        />
+      </div>
+
+      <div>
+        <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}> Most Recent Clarity Moments From The Community</div>
+        <Gallery
+          isMintingLoading={false}
+          isLoading={isOtherNftsLoading}
+          nfts={otherNfts}
+          type={"other"}
+        />
+      </div>
     </div>
-
-    <div>
-      <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}> Most Recent Clarity Moments From The Community</div>
-      <Gallery
-        isMintingLoading={false}
-        isLoading={isOtherNftsLoading}
-        nfts={otherNfts}
-        type={"other"}
-      />
-    </div>
-
-  </div>
+  </>
 }
