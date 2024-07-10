@@ -12,7 +12,7 @@ export const Navbar = () => {
     <nav className="flex flex-row w-full align-middle bg-[#3c4e7d] p-4">
       <div className="flex-auto flex items-center space-x-2 text-white">
         <FaChartLine className="text-2xl text-[#F9EB68]" />
-        <span className="text-2xl font-bold">Clarity<span className={"text-[#F9EB68] " + FONT_BOLD.className}>Market</span></span>
+        <span className="text-lg md:text-2xl font-bold">Clarity<span className={"text-[#F9EB68] " + FONT_BOLD.className}>Market</span> v2</span>
       </div>
       <button
             onClick={() => disconnect()}

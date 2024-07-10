@@ -21,15 +21,15 @@ export function Landing() {
             </div>
           </nav>
           <div className="container flex flex-col items-center md:flex-row md:space-x-6 mx-auto p-4 md:p-20">
-            <div className="max-w-2xl text-center md:text-left px-20">
-              <span className="text-4xl font-bold mb-4 bg-white text-[#3c4e7d]">Are you tired of losing money on the stocks markets <b>???</b></span>
-              <p className="leading-snug text-3xl my-8">
-                All you need is <span className={"underline text-4xl text-[#F9EB68] " + FONT_BOLD.className}>Clarity</span>, our AI-powered financial educational app designed to <span className={"px-2 text-[#3c4e7d] bg-white " + FONT_BOLD.className}>Empower retail investors</span>
+            <div className="max-w-2xl text-lg text-center md:text-left px-20">
+              <span className="md:text-4xl font-bold mb-4 bg-white text-[#3c4e7d]">Are you tired of losing money on the stocks markets <b>???</b></span>
+              <p className="leading-snug md:text-3xl my-8">
+                All you need is <span className={"underline md:text-4xl text-[#F9EB68] " + FONT_BOLD.className}>Clarity</span>, our AI-powered financial educational app designed to <span className={"px-2 text-[#3c4e7d] bg-white " + FONT_BOLD.className}>Empower retail investors</span>
               </p>
               <div className="flex justify-center mt-6 space-x-4 md:justify-start">
                 <button
                   onClick={() => open()}
-                  className={"flex flex-row items-center gap-2 px-5 py-2 mx-auto text-xl rounded-3xl border-4 border-[#F9EB68] bg-[#47a1ff] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] duration-200 " + FONT_BOLD.className}
+                  className={"flex flex-row items-center gap-2 px-5 py-2 mx-auto text-sm md:text-xl rounded-3xl border-4 border-[#F9EB68] bg-[#47a1ff] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] duration-200 " + FONT_BOLD.className}
                 >
                   Connect wallet to Enter
                 </button>

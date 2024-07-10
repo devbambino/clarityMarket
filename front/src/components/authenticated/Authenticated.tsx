@@ -6,8 +6,9 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { ClarityMoment, Gallery, Nft } from "@/components/Gallery";
 import { agentABI, dalleABI } from "@/types/network";
 import Navbar from "../navbar";
-import { Field, Select, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
+import { Field, Select, Disclosure, DisclosureButton, DisclosurePanel, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { CarouselGallery } from "../CarouselGallery";
 
 const HTML_REGULAR =
   /<(?!img|table|\/table|thead|\/thead|tbody|\/tbody|tr|\/tr|td|\/td|th|\/th|br|\/br).*?>/gi
@@ -87,10 +88,11 @@ export const Authenticated = () => {
     let indexedUserNfts: Nft[] = []
 
     const ownerBalance = await dalleContract.balanceOf(address)
+    //console.log(`getUserNfts ownerBalance: ${ownerBalance}`)
     for (let i = Number(ownerBalance) - 1; i >= 0; i--) {
       //for (let i = 0; i < 5; i++) {
       // if ((userNfts.current || []).length > 5) break
-      if (userNfts.length > 5 || indexedUserNfts.length > 5) break
+      if (indexedUserNfts.length > 5) break
       try {
         const token = await dalleContract.tokenOfOwnerByIndex(address, i)
 
@@ -279,7 +281,6 @@ export const Authenticated = () => {
           const tokenUri = await pollTokenUri(contract, tokenId)
           if (tokenUri) {
             getUserNfts()
-
           }
         }
 
@@ -356,59 +357,74 @@ export const Authenticated = () => {
       <button
         onClick={onExplain}
         disabled={isLoadingExplain || isLoadingMint}
-        className={"flex flex-row items-center gap-2 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-xl  duration-200 " + FONT_BOLD.className}
+        className={"flex flex-row items-center gap-2 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] disabled:cursor-wait hover:text-black hover:bg-[#F9EB68] mx-auto text-xl  duration-200 " + FONT_BOLD.className}
       >
         {isLoadingExplain && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-        Get A Clarity Moment
+        Get A Clarity Explanation
       </button>
 
-      {agentResponse && (
-        <div>
-          <div className="mx-auto w-full max-w-lg divide-y divide-white/5 rounded-xl bg-[#374F81]">
-            <Disclosure as="div" className="p-6" defaultOpen={true}>
-              <DisclosureButton className="group flex w-full items-center justify-between">
-                <span className={"text-lg font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
-                  This is what {day == "today" ? "is" : "was"} happening with the stocks markets...
-                </span>
-                <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
-              </DisclosureButton>
-              <DisclosurePanel className="mt-2 text-base text-white">
-                {agentResponse.metaphor.text}
-                <button
-                  onClick={onMint}
-                  disabled={isLoadingExplain || isLoadingMint}
-                  className={"flex flex-row items-center gap-2 mt-4 px-5 py-2 rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-base  duration-200 " + FONT_BOLD.className}
-                >
-                  {isLoadingMint && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
-                  Mint Your Clarity Moment
-                </button>
-              </DisclosurePanel>
-            </Disclosure>
-            <Disclosure as="div" className="p-6">
-              <DisclosureButton className="group flex w-full items-center justify-between">
-                <span className={"text-left text-base font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
-                  <b>Fancy a more technical explanation?</b>
-                </span>
-                <ChevronDownIcon className="size-5 fill-[#F9EB68] group-data-[hover]:fill-white/50 group-data-[open]:rotate-180" />
-              </DisclosureButton>
-              <DisclosurePanel className="mt-2 text-base text-white">{agentResponse.explanation.text}</DisclosurePanel>
-            </Disclosure>
-          </div>
+      <div className="flex flex-col md:flex-row items-center align-center">
+        <div className="flex-1 grow m-4 divide-y divide-white/5 rounded-xl">
+          <TabGroup>
+            <TabList className="flex gap-4">
+              <Tab
+                key="metaphor"
+                className="rounded-full py-1 px-3 text-sm/6 font-semibold border-4 border-[#F9EB68] text-[#F9EB68] data-[selected]:text-black hover:text-black focus:outline-none data-[selected]:bg-[#F9EB68] data-[hover]:[#F9EB68] data-[selected]:data-[hover]:bg-[#F9EB68] data-[focus]:outline-1 data-[focus]:outline-white"
+              >Metaphoric</Tab>
+              <Tab
+                key="technical"
+                className="rounded-full py-1 px-3 text-sm/6 font-semibold border-4 border-[#F9EB68] text-[#F9EB68] data-[selected]:text-black hover:text-black focus:outline-none data-[selected]:bg-[#F9EB68] data-[hover]:bg-[#F9EB68] data-[selected]:data-[hover]:bg-[#F9EB68] data-[focus]:outline-1 data-[focus]:outline-white"
+              >Technical
+              </Tab>
+            </TabList>
+            <TabPanels className="mt-3 bg-[#374F81] rounded-xl">
+              <TabPanel key="metaphor" className="rounded-xl bg-white/5 p-3">
+                {agentResponse ?
+                  <div><span className={"hidden text-lg font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
+                    This is the Metaphoric explanation of what {day == "today" ? "is" : "was"} happening with the stocks markets:
+                  </span>
+                    <p>{agentResponse.metaphor.text}</p>
+                    <button
+                      onClick={onMint}
+                      disabled={isLoadingExplain || isLoadingMint}
+                      className={"flex flex-row items-center gap-2 mt-4 px-5 py-2 disabled:cursor-wait rounded-3xl border-4 border-[#F9EB68] text-[#F9EB68] hover:text-black hover:bg-[#F9EB68] mx-auto text-base  duration-200 " + FONT_BOLD.className}
+                    >
+                      {isLoadingMint && <AiOutlineLoading3Quarters className="animate-spin size-4" />}
+                      Mint Your Clarity NFT
+                    </button>
+                  </div>
+                  :
+                  <p>Here you will get a really easy to understand metaphor explaining what is happening with the stocks markets...</p>
+                }
+              </TabPanel>
+              <TabPanel key="technical" className="rounded-xl bg-white/5 p-3">
+                {agentResponse ?
+                  <div>
+                    <span className={"hidden text-lg font-bold text-[#F9EB68] group-data-[hover]:text-white/80 " + FONT_BOLD.className}>
+                      This is the Technical explanation of what {day == "today" ? "is" : "was"} happening with the stocks markets:
+                    </span>
+                    <p>{agentResponse.explanation.text}</p>
+                  </div>
+                  :
+                  <p>Here you will get a really easy to understand explanation of what is happening with the stocks markets...</p>
+                }
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
         </div>
-      )}
-
-      <div>
-        <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}>Your Most Recent Clarity Moments</div>
-        <Gallery
-          isMintingLoading={isMintingLoading}
-          isLoading={isUserNftsLoading}
-          nfts={userNfts}
-          type={"user"}
-        />
+        <div className="flex-1 grow mx-auto items-center align-middle">
+          <div className={"text-xl text-[#F9EB68] my-2 " + FONT_BOLD.className}>Your Recent Clarity NFTs</div>
+          <CarouselGallery
+            isMintingLoading={isMintingLoading}
+            isLoading={isUserNftsLoading}
+            nfts={userNfts}
+            type={"user"}
+          />
+        </div>
       </div>
 
       <div>
-        <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}> Most Recent Clarity Moments From The Community</div>
+        <div className={"text-xl text-[#F9EB68] " + FONT_BOLD.className}> Recent Clarity NFTs From The Community</div>
         <Gallery
           isMintingLoading={false}
           isLoading={isOtherNftsLoading}
